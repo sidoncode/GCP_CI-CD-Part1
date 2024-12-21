@@ -6,4 +6,4 @@ handlers:
   secure: always
 
 env_variables:
-  BUCKET_NAME: staging-reflected-coder-372912
+  BUCKET_NAME: reflected-coder-372912-staging
