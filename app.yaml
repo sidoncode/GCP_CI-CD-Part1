@@ -1,9 +1,0 @@
-runtime: python39
-
-handlers:
-- url: /
-  static_dir: www
-  secure: always
-
-env_variables:
-  BUCKET_NAME: reflected-coder-372912-staging
