@@ -12,10 +12,11 @@ steps:
 - name: 'gcr.io/cloud-builders/gke-deploy'
   args: 
     - 'apply'
-    - '--filename=deployment-hpa-service.yaml'
+    - '--filename=kubernetes/deploy-config.yaml'
     - '--cluster=$_CLUSTER_NAME'
     - '--location=$_CLUSTER_REGION'
-    - '--image=$_DOCKER_IMAGE'
+  env:
+    - '_DOCKER_IMAGE=$_DOCKER_IMAGE'
 options:
   logging: 'CLOUD_LOGGING_ONLY'
 
