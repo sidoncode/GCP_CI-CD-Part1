@@ -1,8 +1,25 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'us-central1-docker.pkg.dev/upgradlabs-1736009524628/sample/httpd-app:latest', '.']
+  args: 
+    - 'build'
+    - '-t'
+    - '$_DOCKER_IMAGE'
+    - '.'
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'us-central1-docker.pkg.dev/upgradlabs-1736009524628/sample/httpd-app:latest']
+  args: 
+    - 'push'
+    - '$_DOCKER_IMAGE'
+- name: 'gcr.io/cloud-builders/gke-deploy'
+  args: 
+    - 'apply'
+    - '--filename=deployment-hpa-service.yaml'
+    - '--cluster=$_CLUSTER_NAME'
+    - '--location=$_CLUSTER_REGION'
+    - '--image=$_DOCKER_IMAGE'
 options:
   logging: 'CLOUD_LOGGING_ONLY'
 
+substitutions:
+  _DOCKER_IMAGE: 'us-central1-docker.pkg.dev/upgradlabs-1736009524628/sample/httpd-app:latest'
+  _CLUSTER_NAME: 'deployment-1-cluster'
+  _CLUSTER_REGION: 'us-central1'
