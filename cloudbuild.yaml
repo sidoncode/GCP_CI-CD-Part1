@@ -1,8 +1,8 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'us-central1-docker.pkg.dev/qwiklabs-gcp-02-562f6c4534ed/sample/httpd-app:latest', '.']
+  args: ['build', '-t', 'us-central1-docker.pkg.dev/upgradlabs-1736009524628/sample/httpd-app:latest', '.']
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'us-central1-docker.pkg.dev/qwiklabs-gcp-02-562f6c4534ed/sample/httpd-app:latest']
+  args: ['push', 'us-central1-docker.pkg.dev/upgradlabs-1736009524628/sample/httpd-app:latest']
 options:
   logging: 'CLOUD_LOGGING_ONLY'
 
