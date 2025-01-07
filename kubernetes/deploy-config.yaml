@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-2
+  namespace: default
+  labels:
+    app: deployment-2
+  annotations:
+    autopilot.gke.io/resource-adjustment: >-
+      {"input":{"containers":[{"name":"httpd-app"}]},"output":{"containers":[{"limits":{"ephemeral-storage":"1Gi"},"requests":{"cpu":"500m","ephemeral-storage":"1Gi","memory":"2Gi"},"name":"httpd-app"}]},"modified":true}
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: deployment-2
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: deployment-2
+    spec:
+      containers:
+        - name: httpd-app
+          image: gcr.io/upgradlabs-1736009524628/github.com/sidoncode/gcp_ci-cd-part1:latest
+          imagePullPolicy: IfNotPresent
+          resources:
+            limits:
+              ephemeral-storage: 1Gi
+            requests:
+              cpu: 500m
+              ephemeral-storage: 1Gi
+              memory: 2Gi
+          securityContext:
+            capabilities:
+              drop:
+                - NET_RAW
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      tolerations:
+        - key: kubernetes.io/arch
+          operator: Equal
+          value: amd64
+          effect: NoSchedule
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: deployment-2-hpa
+  namespace: default
+  labels:
+    app: deployment-2
+spec:
+  minReplicas: 2
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: deployment-2
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: deployment-2-service
+  namespace: default
+  annotations:
+    cloud.google.com/neg: '{"ingress":true}'
+  labels:
+    app: deployment-2
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Cluster
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+  selector:
+    app: deployment-2
